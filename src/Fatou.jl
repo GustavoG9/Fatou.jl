@@ -67,9 +67,10 @@ mutable struct Define
             cmap::String="")
         !(typeof(∂) <: Array) && (∂ = [-float(∂),∂,-∂,∂])
         length(∂) == 2 && (∂ = [∂[1],∂[2],∂[1],∂[2]])
-        !newt ? (f = funk(E); q = funk(Q)) :
-        (f = funk(newton_raphson(E,m)); q = funk(Expr(:call,:abs,E)))
-        c = funK(C)
+        vars = [:z,:c]
+        !newt ? (f = genfun(E,vars); q = genfun(Q,vars)) :
+        (f = genfun(newton_raphson(E,m),vars); q = genfun(Expr(:call,:abs,E),vars))
+        c = genfun(C,[:z,:n,:p])
         return new(E,f,q,c,convert(Array{Float64,1},∂),UInt16(n),UInt8(N),float(ϵ),iter,float(p),newt,m,mandel,seed,x0,orbit,depth,cmap)
     end
 end
